@@ -6,6 +6,7 @@ const connectDB = require("./db.js");
 const UserRouter = require("./routers/user.router");
 const QuestionRouter = require("./routers/question.router");
 connectDB();
+
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
@@ -18,7 +19,8 @@ app.use("/questions",QuestionRouter);
 app.use((err, req, res, next) => {
     const code = err.code || 500;
     res.status(code).json({
-        msg: err.msg
+        msg: err.msg,
+        errors: err.errors
     })
     return;
 });
