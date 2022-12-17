@@ -1,5 +1,6 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken")
 const {checkSchema, validationResult} = require("express-validator");
 
 const User = require("../models/user.model");
@@ -7,7 +8,21 @@ const User = require("../models/user.model");
 const router = express.Router();
 const saltrounds = 10;
 
-router.get("/", async (req,res,next)=>{
+const authVerify = (req, res, next) => {
+    const token = req.header("auth-token");
+    if(!token) return res.status(401).send("Access Denied")
+
+    try{
+        const verified = jwt.verify(token, process.env.TOKEN_SECRET);
+        req.user = verified;
+        console.log(req.user);
+        next();
+    } catch(error) {
+        res.status(400).send("Invalid Token")
+    }
+}
+
+router.get("/", authVerify, async (req, res, next)=>{
     try{
         const users = await User.find({})
         res.status(200).json(users);
@@ -57,8 +72,8 @@ router.post("/signup", checkSchema(SignupFormSchema), async (req, res, next)=>{
                 next({code: 400, msg: "Data failed to validate", errors: ["User already Exists"]})
             }
             else{
-                res.status(201).json(user);
-                return;
+                const token = jwt.sign({_id: user._id}, process.env.TOKEN_SECRET)
+                res.status(201).header("auth-token", token).json(user);
             }
         })
         
@@ -78,7 +93,8 @@ router.post("/login", async(req,res,next)=>{
         const hash = await bcrypt.compare(req.body.password,user.password);
         
         if(hash){
-            res.status(200).json(user);
+            const token = jwt.sign({_id: user._id}, process.env.TOKEN_SECRET)
+            res.status(200).header("auth-token", token).json(user);
         }else{
             next({code: 400, msg: "Data failed to validate", errors: ["Incorrect Password"]})
         }
