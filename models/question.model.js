@@ -11,7 +11,7 @@ const quesSchema = new mongoose.Schema({
         max: 10
     },
     options:[String],
-    answer:[Number],
+    answers:[Number],
     questionType:{
         type:String,
         enum:["single", "multiple"]
