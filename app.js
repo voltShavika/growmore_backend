@@ -4,7 +4,9 @@ const cors = require('cors');
 const app = express();
 const connectDB = require("./db.js");
 const UserRouter = require("./routers/user.router");
+
 connectDB();
+
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
@@ -16,7 +18,8 @@ app.use("/users", UserRouter);
 app.use((err, req, res, next) => {
     const code = err.code || 500;
     res.status(code).json({
-        msg: err.msg
+        msg: err.msg,
+        errors: err.errors
     })
     return;
 });
