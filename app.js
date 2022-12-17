@@ -5,7 +5,7 @@ const cors = require('cors');
 const app = express();
 const connectDB = require("./db.js");
 const UserRouter = require("./routers/user.router");
-
+const QuestionRouter = require("./routers/question.router");
 
 dotenv.config();
 connectDB();
@@ -17,6 +17,7 @@ app.use(bodyParser.urlencoded({
 }))
 
 app.use("/users", UserRouter);
+app.use("/questions",QuestionRouter);
 
 app.use((err, req, res, next) => {
     const code = err.code || 500;
