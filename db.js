@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
-const url = "mongodb://localhost:27017/growmore"
+// const url = "mongodb://localhost:27017/growmore"
+const url = "mongodb+srv://shavika:Cant2019@cluster0.evijg.mongodb.net/growmore?retryWrites=true&w=majority"
 const connectDB = function(){
   mongoose.connect(url, {
     useNewUrlParser: true,
