@@ -1,26 +1,16 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken")
+
 const {checkSchema, validationResult} = require("express-validator");
 
+const authVerify = require("../middlewares/auth")
 const User = require("../models/user.model");
 
 const router = express.Router();
 const saltrounds = 10;
 
-const authVerify = (req, res, next) => {
-    const token = req.header("auth-token");
-    if(!token) return res.status(401).send("Access Denied")
 
-    try{
-        const verified = jwt.verify(token, process.env.TOKEN_SECRET);
-        req.user = verified;
-        console.log(req.user);
-        next();
-    } catch(error) {
-        res.status(400).send("Invalid Token")
-    }
-}
 
 router.get("/", authVerify, async (req, res, next)=>{
     try{
@@ -62,7 +52,7 @@ router.post("/signup", checkSchema(SignupFormSchema), async (req, res, next)=>{
 
         const hash = await bcrypt.hash(req.body.password,saltrounds)
         const user = new User({
-            userType:"Student",
+            userType: req.body.userType,
             name:req.body.name,
             email:req.body.email,
             password:hash

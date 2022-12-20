@@ -1,11 +1,12 @@
 const express = require("express");
+const authVerify = require("../middlewares/auth")
 const Question = require("../models/question.model.js");
 const router = express.Router();
 
 
-router.get("/",async (req,res,next)=>{
+router.get("/", authVerify, async (req,res,next)=>{
     try{
-        const questions = await Question.find({});
+        const questions = await Question.find({}).sort({level: 1});
         res.status(200).json(questions);
     }
     catch(e){
@@ -13,21 +14,24 @@ router.get("/",async (req,res,next)=>{
     }
 })
 
-router.post("/add", async (req,res,next)=>{
+router.post("/add", authVerify, async (req,res,next)=>{
     try{
         const ques = new Question({
-            question:req.body.question,
-            level:req.body.level,
-            questionType:req.body.questionType,
-            options:[req.body.option1,req.body.option2,req.body.option3,req.body.option4],
-            answers:req.body.answers
-        
+            addedBy: req.user._id,
+            question: req.body.question,
+            level: req.body.level,
+            option1: req.body.option1,
+            option2: req.body.option2,
+            option3: req.body.option3,
+            option4: req.body.option4,
+            answers: req.body.answers,
+            questionType:req.body.questionType
         })
-        await ques.save((err)=>{
+        ques.save((err)=>{
             if(!err){
                 res.status(200).json(ques);
             }else{
-                next({code:400,msg:"ques cannot be added"})
+                next({code:400,msg: "question cannot be added"})
             }
 
         })

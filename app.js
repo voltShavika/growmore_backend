@@ -6,6 +6,7 @@ const app = express();
 const connectDB = require("./db.js");
 const UserRouter = require("./routers/user.router");
 const QuestionRouter = require("./routers/question.router");
+const QuizRouter = require("./routers/quiz.router");
 
 dotenv.config();
 connectDB();
@@ -18,6 +19,7 @@ app.use(bodyParser.urlencoded({
 
 app.use("/users", UserRouter);
 app.use("/questions",QuestionRouter);
+app.use("/quiz",QuizRouter);
 
 app.use((err, req, res, next) => {
     const code = err.code || 500;

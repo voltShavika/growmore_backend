@@ -1,6 +1,10 @@
 const mongoose = require("mongoose");
 
 const quesSchema = new mongoose.Schema({
+    addedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "user"
+    },
     question:{
         type:String,
         require:true
@@ -10,8 +14,23 @@ const quesSchema = new mongoose.Schema({
         min: 1,
         max: 10
     },
-    options:[String],
-    answers:[Number],
+    option1: {
+        type: String,
+        require: true
+    },
+    option2: {
+        type: String,
+        require: true
+    },
+    option3: {
+        type: String,
+        require: true
+    },
+    option4: {
+        type: String,
+        require: true
+    },
+    answers: [Number],
     questionType:{
         type:String,
         enum:["single", "multiple"]
