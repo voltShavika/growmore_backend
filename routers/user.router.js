@@ -48,6 +48,7 @@ router.post("/signup", checkSchema(SignupFormSchema), async (req, res, next)=>{
         const errors = validationResult(req);
         if(!errors.isEmpty()){
             next({code: 400, msg: "Data failed to validate", errors: errors.array().map(e => e.msg)})
+            return;
         }
 
         const hash = await bcrypt.hash(req.body.password,saltrounds)
@@ -73,9 +74,23 @@ router.post("/signup", checkSchema(SignupFormSchema), async (req, res, next)=>{
     }
 })
 
+const LoginFormSchema = {
+    email: {
+        notEmpty: true,
+        errorMessage: "Email cannot be blank"
+    },
+    password: {
+        notEmpty: true,
+        errorMessage: "Password cannot be blank"
+    }
+}
 
-router.post("/login", async(req,res,next)=>{
+router.post("/login", checkSchema(LoginFormSchema), async(req,res,next)=>{
     try{
+        const errors = validationResult(req);
+        if(!errors.isEmpty()){
+            next({code: 400, msg: "Data failed to validate", errors: errors.array().map(e => e.msg)})
+        }
         const user = await User.findOne({email:req.body.email})
         if(!user){
             next({code: 400, msg: "Data failed to validate", errors: ["User doesnt Exist"]})

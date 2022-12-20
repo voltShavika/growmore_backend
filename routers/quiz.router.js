@@ -2,6 +2,7 @@ const express = require("express")
 const Quiz = require("../models/quiz.model");
 const authVerify = require("../middlewares/auth");
 const Question = require("../models/question.model");
+const Result = require("../models/result.model");
 const router = express.Router();
 
 
@@ -40,18 +41,34 @@ router.post("/generate", authVerify, async (req, res, next) => {
     }
 })
 
+router.post("/result/:id", authVerify, async (req, res, next) => {
+    try{
+        const quiz = await Quiz.findOne({_id: req.params.id});
+        const result = new Result({
+            attemptedBy: req.user._id,
+            quiz: quiz._id,
+            performance: req.body.performance,
+            totalScore: req.body.totalScore
+        })
+        await result.save();
+        res.json(result);
+
+    }
+    catch(e) {
+        next({msg: e.stack})
+    }
+});
+
+router.get("/result/:id", authVerify, async (req, res, next) => {
+    try{
+        
+        const result = await Result.findOne({attemptedBy: req.user._id, quiz: req.params.id});
+        res.json(result)
+    }
+    catch(e) {
+        next({msg: e.stack})
+    }
+});
+
 module.exports = router
 
-
-// const questionIds = req.body.questions;
-//         const questions = await Question.find({_id: {
-//             $in: questionIds
-//         }});
-//         let levelWiseQuestions = {}
-//         for(let i=1;i<=10;i++){
-//             levelWiseQuestions[i] = []
-//         }
-//         questions.forEach(element => {
-//             levelWiseQuestions[element.level] = [...levelWiseQuestions[element.level], element._id]
-//         });
-//         console.log(levelWiseQuestions);
