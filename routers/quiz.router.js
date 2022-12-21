@@ -16,6 +16,16 @@ router.get("/", authVerify, async (req, res, next) => {
     }
 })
 
+router.get("/student", authVerify, async (req, res, next) => {
+    try{
+        const quizes = await Quiz.find({})
+        res.json(quizes)
+    }
+    catch(e) {
+        next({msg: e.stack})
+    }
+})
+
 router.get("/:id", authVerify, async (req, res, next) => {
     try{
         const quiz = await Quiz.findOne({_id: req.params.id}).populate('questions')
@@ -62,8 +72,8 @@ router.post("/result/:id", authVerify, async (req, res, next) => {
 router.get("/result/:id", authVerify, async (req, res, next) => {
     try{
         
-        const result = await Result.findOne({attemptedBy: req.user._id, quiz: req.params.id});
-        res.json(result)
+        const result = await Result.find({attemptedBy: req.user._id, quiz: req.params.id});
+        res.json(result[result.length - 1])
     }
     catch(e) {
         next({msg: e.stack})
