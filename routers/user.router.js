@@ -64,7 +64,7 @@ router.post("/signup", checkSchema(SignupFormSchema), async (req, res, next)=>{
             }
             else{
                 const token = jwt.sign({_id: user._id}, process.env.TOKEN_SECRET)
-                res.status(201).header("auth-token", token).json(user);
+                res.status(201).json({...user, token: token});
             }
         })
         
@@ -99,7 +99,7 @@ router.post("/login", checkSchema(LoginFormSchema), async(req,res,next)=>{
         
         if(hash){
             const token = jwt.sign({_id: user._id}, process.env.TOKEN_SECRET)
-            res.status(200).header("auth-token", token).json(user);
+            res.status(200).json({...user, token: token});
         }else{
             next({code: 400, msg: "Data failed to validate", errors: ["Incorrect Password"]})
         }

@@ -11,9 +11,7 @@ const QuizRouter = require("./routers/quiz.router");
 dotenv.config();
 connectDB();
 
-app.use(cors({
-    exposedHeaders: 'auth-token'
-}));
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended:true
