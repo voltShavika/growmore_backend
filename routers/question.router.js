@@ -1,4 +1,5 @@
 const express = require("express");
+const {checkSchema, validationResult} = require("express-validator");
 const authVerify = require("../middlewares/auth")
 const Question = require("../models/question.model.js");
 const router = express.Router();
@@ -14,8 +15,48 @@ router.get("/", authVerify, async (req,res,next)=>{
     }
 })
 
-router.post("/add", authVerify, async (req,res,next)=>{
+const QuestionAddSchema = {
+    question: {
+        notEmpty: true,
+        errorMessage: "Question cannot be blank"
+    },
+    option1: {
+        notEmpty: true,
+        errorMessage: "Option1 cannot be blank"
+    },
+    option2: {
+        notEmpty: true,
+        errorMessage: "Option2 cannot be blank"
+    },
+    option3: {
+        notEmpty: true,
+        errorMessage: "Option3 cannot be blank"
+    },
+    option4: {
+        notEmpty: true,
+        errorMessage: "Option4 cannot be blank"
+    },
+    level: {
+        notEmpty: true,
+        errorMessage: "level cannot be blank"
+    },
+    questionType: {
+        notEmpty: true,
+        errorMessage: "QuestionType cannot be blank"
+    },
+    answers: {
+        notEmpty: true,
+        errorMessage: "answers cannot be blank"
+    },
+}
+
+router.post("/add", authVerify, checkSchema(QuestionAddSchema), async (req,res,next)=>{
     try{
+        const errors = validationResult(req);
+        if(!errors.isEmpty()){
+            next({code: 400, msg: "Validation Error", errors: errors.array().map(e => e.msg)})
+            return;
+        }
         const ques = new Question({
             addedBy: req.user._id,
             question: req.body.question,
