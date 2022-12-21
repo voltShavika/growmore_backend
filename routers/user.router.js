@@ -6,6 +6,7 @@ const {checkSchema, validationResult} = require("express-validator");
 
 const authVerify = require("../middlewares/auth")
 const User = require("../models/user.model");
+const Result = require("../models/result.model");
 
 const router = express.Router();
 const saltrounds = 10;
@@ -115,6 +116,17 @@ router.post("/login", checkSchema(LoginFormSchema), async(req,res,next)=>{
     }
 
 })
+
+router.get("/results", authVerify, async (req, res, next) => {
+    try{
+        
+        const result = await Result.find({attemptedBy: req.user._id});
+        res.json(result)
+    }
+    catch(e) {
+        next({msg: e.stack})
+    }
+});
 
 module.exports = router;
 

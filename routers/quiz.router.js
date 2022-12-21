@@ -27,6 +27,7 @@ router.get("/student", authVerify, async (req, res, next) => {
 })
 
 router.get("/:id", authVerify, async (req, res, next) => {
+    console.log("Idhar hu");
     try{
         const quiz = await Quiz.findOne({_id: req.params.id}).populate('questions')
         res.json(quiz)
@@ -50,17 +51,6 @@ router.post("/generate", authVerify, async (req, res, next) => {
         next({msg: e.stack})
     }
 })
-
-router.get("/results", authVerify, async (req, res, next) => {
-    try{
-        
-        const result = await Result.find({attemptedBy: req.user._id});
-        res.json(result)
-    }
-    catch(e) {
-        next({msg: e.stack})
-    }
-});
 
 router.post("/result/:id", authVerify, async (req, res, next) => {
     try{
